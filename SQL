@@ -1,0 +1,136 @@
+MDP : .@}zvXzZ9{QCiGPW
+ID : 4213972_projetsql
+https://supportindeed.com/phpMyAdmin/index.php?route=/database/structure&db=4213972_projetsql
+
+CONCAT('A' , COUNT(ID_Artisan))
+
+1. a
+
+
+
+MODIFIER
+	SQL :
+SELECT *
+FROM Artisan 
+UPDATE ARTISAN
+SET Artisan.Mail_artisan = Mail, Artisan.Nom_artisan = Nom, Artisan.Prenom_artisan = Prenom, Artisan.CodePostal_artisan = CodePostal, Artisan.Specialite = Specialite_, Artisan.Region = Region_, Artisan.Dispo = Dispo, Artisan.Supprime = Suppr,
+WHERE ID.Artisan = ID
+
+1. c.
+
+	SQL :
+SELECT ID_Fournisseur, Nom_fournisseur, Prenom_Fournisseur, Region_Fournisseur, se_fournir.dateApprovisionnement, se_fournir.qteApprovisionnement, Artisan.ID_Artisan, Artisan.Nom_artisan, Artisan.Prenom_artisan
+FROM Fournisseur
+NATURAL JOIN se_fournir
+NATURAL JOIN Artisan
+ORDER BY ID_Fournisseur
+
+
+1. e.
+
+	SQL :
+SELECT AVG(Commande.prix_commande)
+FROM Commande
+INNER JOIN demander ON demander.ID_Travaux = Travaux.ID_Travaux
+GROUP BY Travaux.Type_Travaux
+
+!!!!!! A TESTER !!!!!!!!!
+
+2. a.
+
+	SQL :
+SELECT * , Commande.ID_Commande, Facture.ID_Facture
+FROM Artisan
+NATURAL JOIN realiser
+NATURAL JOIN Devis
+NATURAL JOIN Commande
+NATURAL JOIN Facture
+WHERE Artisan.Nom_artisan LIKE CONCAT(Nom, '%') AND Artisan.Prenom_artisan LIKE CONCAT(Prenom, '%')
+
+2. b.
+
+	SQL :
+SELECT Commande.ID_Commande, Commande.Etat , Statut.statut, Client.ID_Client, Client.Nom_client
+FROM Commande
+NATURAL JOIN Statut NATURAL JOIN Client
+WHERE statut = statut_para_1 OR statut = statut_para_2 OR statut = statut_para_3
+ORDER BY statut
+
+Devis accepté
+Travaux en cours
+Travaux terminés
+
+2. c.
+
+	SQL :
+SELECT *, Devis.prix_devis, Client.Fidelite
+FROM Commande
+NATURAL JOIN Devis NATURAL JOIN Client
+WHERE (prix_devis >= 2000 AND Fidelite = 1) OR (prix_devis >= 4000 AND Fidelite = 0);
+
+Client : 8
+Travaux : T007
+Facture : F009
+Devis : D011
+Statut : S1
+
+2. d.
+
+	Fonction Delais_Unitaire :
+BEGIN
+	DECLARE Diff FLOAT;
+    	DECLARE Indic_Quali FLOAT;
+    	IF Date_fin = '0000-00-00' THEN
+    		SET Date_fin = CURRENT_DATE;
+    	END IF;
+    	SET Diff = DATEDIFF(Date_Fin,Date_Debut);
+    	SET Indic_Quali = ((5/31)*Diff) + 5;
+    	RETURN Indic_Quali;
+END
+
+	SQL moyenne :
+SELECT Date_Debut, Date_Fin, AVG(Delais_unitaire(Commande.date_fin_reelle,Commande.date_fin_commande)) AS Qualite_Delai_Moyenne
+FROM Commande
+WHERE Date_fin_commande >= Date_Debut AND Date_fin_commande <= CURRENT_DATE
+
+!!!!!!!!!!!!!! AJOUTER LES RETARDS !!!!!!!!!!!!!!!!!
+
+4.717741966247559
+
+	SQL unitaire :
+SELECT Commande.ID_Commande, Commande.date_debut_commande, Commande.date_fin_commande, Commande.date_fin_reelle,  Delais_unitaire(Commande.date_fin_reelle,Commande.date_fin_commande) AS Qualite_Delais
+FROM Commande
+WHERE Date_fin_commande >= Date_Reference AND Date_debut_commande <= CURRENT_DATE
+ORDER BY date_fin_commande;
+
+3. a.
+
+	SQL :
+SELECT SUM(Facture.prixFinal), YEAR(Commande.date_fin_reelle)
+FROM Facture
+NATURAL JOIN Commande
+WHERE date_fin_reelle > '0000-00-00'
+GROUP BY YEAR(Commande.date_fin_reelle);
+
+3. b.
+
+	SQL :
+SELECT SUM(Facture.prixFinal), Travaux.Type_Travaux
+FROM Facture
+NATURAL JOIN Commande
+NATURAL JOIN Travaux
+WHERE date_fin_reelle > '0000-00-00'
+GROUP BY Travaux.Type_Travaux;
+
+
+
+
+
+
+
+
+
+
+
+
+Préciser utilisation des NATURAL JOIN dans les requêtes et pourquoi on peut avec notre mcd 
